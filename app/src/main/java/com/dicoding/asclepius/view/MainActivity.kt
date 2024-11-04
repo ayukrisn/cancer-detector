@@ -13,10 +13,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.dicoding.asclepius.R
 import com.dicoding.asclepius.databinding.ActivityMainBinding
+import com.dicoding.asclepius.helper.ImageClassifierHelper
+import org.tensorflow.lite.task.vision.classifier.Classifications
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var currentImageUri: Uri? = null
+    private lateinit var imageClassifierHelper: ImageClassifierHelper
 
     /***
      * Asking for permission request
@@ -50,9 +53,8 @@ class MainActivity : AppCompatActivity() {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         }
 
-        binding.galleryButton.setOnClickListener{
-            startGallery()
-        }
+        binding.galleryButton.setOnClickListener{ startGallery() }
+        binding.analyzeButton.setOnClickListener{ analyzeImage() }
     }
 
     /***
@@ -81,14 +83,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     /***
-     * Analyze image
+     * Start analyzing image using ImageClassifierHelper
      */
     private fun analyzeImage() {
-        // TODO: Menganalisa gambar yang berhasil ditampilkan.
+        if (currentImageUri != null) {
+            imageClassifierHelper = ImageClassifierHelper(
+                context = this,
+                classifierListener = object : ImageClassifierHelper.ClassifierListener {
+                    override fun onError(error: String) {
+                        showToast(error)
+                    }
+
+                    // If success, move to result
+                    override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
+                        results?.let {
+                            // Pass results to ResultActivity
+                            moveToResult(results)
+                        }
+                    }
+                }
+            )
+            // Start classification
+            imageClassifierHelper.classifyStaticImage(this, currentImageUri!!)
+        } else {
+            showToast("No image selected.")
+        }
     }
 
-    private fun moveToResult() {
+    /***
+     * Move to result activity
+     */
+    private fun moveToResult(results: List<Classifications>) {
         val intent = Intent(this, ResultActivity::class.java)
+
+        // Prepare the classification results to pass to ResultActivity
+        val classifications = results.firstOrNull()?.categories?.map {
+            "${it.label} : ${it.score * 100}%"
+        } ?: listOf("No results")
+
+        // Put classifications and image URI in intent extras
+        intent.putStringArrayListExtra("CLASSIFICATION_RESULTS", ArrayList(classifications))
+        intent.putExtra("IMAGE_URI", currentImageUri.toString())
+
         startActivity(intent)
     }
 

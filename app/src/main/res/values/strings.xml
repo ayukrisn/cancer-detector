@@ -5,4 +5,6 @@
     <string name="gallery">Galeri</string>
     <string name="analyze">Analyze</string>
     <string name="result">Hasil Analisis</string>
+    <string name="image_classifier_failed">Image classifier has failed.</string>
+    <string name="classification_failed">Classification has failed.</string>
 </resources>
