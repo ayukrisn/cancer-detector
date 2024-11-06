@@ -1,7 +1,6 @@
 package com.dicoding.asclepius.view
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,18 +10,27 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import com.dicoding.asclepius.R
 import com.dicoding.asclepius.databinding.ActivityMainBinding
 import com.dicoding.asclepius.helper.ImageClassifierHelper
+import com.dicoding.asclepius.helper.ViewModelFactory
+import com.dicoding.asclepius.view.history.HistoryActivity
+import com.dicoding.asclepius.view.result.ResultActivity
+import com.dicoding.asclepius.view.result.ResultViewModel
 import org.tensorflow.lite.task.vision.classifier.Classifications
 import com.yalantis.ucrop.UCrop
+import org.tensorflow.lite.support.label.Category
 import java.io.File
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var currentImageUri: Uri? = null
     private lateinit var imageClassifierHelper: ImageClassifierHelper
+
+    private val mainViewModel by viewModels<MainViewModel>{
+        ViewModelFactory.getInstance(application)
+    }
 
     /***
      * Asking for permission request
@@ -56,8 +64,20 @@ class MainActivity : AppCompatActivity() {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
         }
 
+        // Observe the current image URI from ViewModel
+        mainViewModel.imageUri.observe(this) { uri ->
+            uri?.let {
+                binding.previewImageView.setImageURI(it)
+            }
+        }
+
+
         binding.galleryButton.setOnClickListener{ startGallery() }
         binding.analyzeButton.setOnClickListener{ analyzeImage() }
+        binding.historyButton.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     /***
@@ -71,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         if (uri != null) {
-            currentImageUri = uri
+            mainViewModel.setImageUri(uri)
             startCrop(uri) //Crop the image
         } else {
             Log.d("Photo Picker", "No media selected")
@@ -82,7 +102,8 @@ class MainActivity : AppCompatActivity() {
      * Function to crop the image
      */
     private fun startCrop(uri: Uri) {
-        val destinationUri = Uri.fromFile(File(cacheDir, "cropped_image.jpg"))
+        val uniqueFileName = "cropped_image_${UUID.randomUUID()}.jpg"
+        val destinationUri = Uri.fromFile(File(cacheDir, uniqueFileName))
         UCrop.of(uri, destinationUri)
             .withAspectRatio(1f, 1f)
             .withMaxResultSize(500, 500)
@@ -94,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            currentImageUri = UCrop.getOutput(data!!)
+            mainViewModel.setImageUri(UCrop.getOutput(data!!)!!)
             showImage() // Display the cropped image
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
@@ -106,7 +127,7 @@ class MainActivity : AppCompatActivity() {
      * Show image chosen
      */
     private fun showImage() {
-        currentImageUri?.let {
+        mainViewModel.imageUri.value?.let {
             Log.d("Image URI", "showImage: $it")
             binding.previewImageView.setImageURI(it)
         }
@@ -116,7 +137,7 @@ class MainActivity : AppCompatActivity() {
      * Start analyzing image using ImageClassifierHelper
      */
     private fun analyzeImage() {
-        if (currentImageUri != null) {
+        mainViewModel.imageUri.value?.let { uri ->
             imageClassifierHelper = ImageClassifierHelper(
                 context = this,
                 classifierListener = object : ImageClassifierHelper.ClassifierListener {
@@ -124,36 +145,27 @@ class MainActivity : AppCompatActivity() {
                         showToast(error)
                     }
 
-                    // If success, move to result
-                    override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
-                        results?.let {
-                            // Pass results to ResultActivity
-                            moveToResult(results)
-                        }
+                    override fun onResults(result: Category?, inferenceTime: Long) {
+                        result?.let {
+                            moveToResult(it)
+                        } ?: showToast("No classification results.")
                     }
                 }
             )
-            // Start classification
-            imageClassifierHelper.classifyStaticImage(this, currentImageUri!!)
-        } else {
-            showToast("No image selected.")
-        }
+            imageClassifierHelper.classifyStaticImage(this, uri)
+        } ?: showToast("No image selected.")
     }
+
 
     /***
      * Move to result activity
      */
-    private fun moveToResult(results: List<Classifications>) {
+    private fun moveToResult(result: Category) {
         val intent = Intent(this, ResultActivity::class.java)
-
-        // Prepare the classification results to be passed to ResultActivity
-        val classifications = results.firstOrNull()?.categories?.map {
-            "${it.label} : ${it.score * 100}%"
-        } ?: listOf("No results")
-
-        // Put classifications and image URI in intent extras
-        intent.putStringArrayListExtra("CLASSIFICATION_RESULTS", ArrayList(classifications))
-        intent.putExtra("IMAGE_URI", currentImageUri.toString())
+        val classificationResult = "${result.label} : ${result.score * 100}%"
+        intent.putStringArrayListExtra("CLASSIFICATION_RESULTS", arrayListOf(classificationResult))
+        intent.putExtra("IMAGE_URI", mainViewModel.imageUri.value.toString())
+        mainViewModel.setResultData(mainViewModel.imageUri.value.toString(), result.label, result.score)
 
         startActivity(intent)
     }

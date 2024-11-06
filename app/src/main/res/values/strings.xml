@@ -7,4 +7,5 @@
     <string name="result">Hasil Analisis</string>
     <string name="image_classifier_failed">Image classifier has failed.</string>
     <string name="classification_failed">Classification has failed.</string>
+    <string name="history">History</string>
 </resources>

@@ -16,6 +16,7 @@ import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.label.Category
 import org.tensorflow.lite.task.core.BaseOptions
 import org.tensorflow.lite.task.core.vision.ImageProcessingOptions
 import org.tensorflow.lite.task.vision.classifier.Classifications
@@ -97,7 +98,16 @@ class ImageClassifierHelper(
         if (results == null) {
             classifierListener?.onError(context.getString(R.string.classification_failed))
         } else {
-            classifierListener?.onResults(results, inferenceTime)
+            // Extract the highest-scoring category
+            val highestCategory = results[0].categories.maxByOrNull { it.score }
+
+            // Check if highestCategory is not null and pass it as a single-item list to the listener
+            if (highestCategory != null) {
+                classifierListener?.onResults(highestCategory, inferenceTime)
+
+            } else {
+                classifierListener?.onError(context.getString(R.string.classification_failed))
+            }
         }
     }
 
@@ -108,7 +118,7 @@ class ImageClassifierHelper(
     interface ClassifierListener {
         fun onError(error: String)
         fun onResults(
-            results: List<Classifications>?,
+            result: Category?,
             inferenceTime: Long
         )
     }
