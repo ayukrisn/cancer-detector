@@ -4,12 +4,39 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:label="@string/hasil_deteksi"
     tools:context=".view.result.ResultActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <TextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/nunito_bold"
+                android:text="@string/hasil_deteksi_toolbar"
+                android:textAlignment="center"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="24sp"
+                tools:layout_editor_absoluteX="138dp"
+                tools:layout_editor_absoluteY="18dp" />
+        </androidx.appcompat.widget.Toolbar>
 
         <ImageView
             android:id="@+id/result_image"
@@ -22,7 +49,18 @@
             android:id="@+id/result_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="20dp"
+            android:fontFamily="@font/nunito_semibold"
+            android:textSize="16sp"
             android:text="@string/result" />
+
+        <TextView
+            android:id="@+id/news_headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:fontFamily="@font/nunito_bold"
+            android:textSize="20sp"
+            android:text="@string/berita_terkait" />
     </LinearLayout>
 </ScrollView>

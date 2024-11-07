@@ -17,8 +17,6 @@ import com.dicoding.asclepius.helper.ImageClassifierHelper
 import com.dicoding.asclepius.helper.ViewModelFactory
 import com.dicoding.asclepius.view.history.HistoryActivity
 import com.dicoding.asclepius.view.result.ResultActivity
-import com.dicoding.asclepius.view.result.ResultViewModel
-import org.tensorflow.lite.task.vision.classifier.Classifications
 import com.yalantis.ucrop.UCrop
 import org.tensorflow.lite.support.label.Category
 import java.io.File
@@ -59,6 +57,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setSupportActionBar(binding.myToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         if (!allPermissionsGranted()) {
             requestPermissionLauncher.launch(REQUIRED_PERMISSION)
