@@ -1,10 +1,10 @@
-package com.dicoding.asclepius.data.room
+package com.dicoding.asclepius.data.local.room
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.dicoding.asclepius.data.entity.PredictionHistory
+import com.dicoding.asclepius.data.local.entity.PredictionHistory
 
 @Database(entities = [PredictionHistory::class], version = 1, exportSchema = false)
 abstract class PredictionHistoryDatabase : RoomDatabase() {

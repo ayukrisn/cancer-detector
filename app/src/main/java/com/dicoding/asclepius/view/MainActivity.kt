@@ -14,7 +14,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.dicoding.asclepius.databinding.ActivityMainBinding
 import com.dicoding.asclepius.helper.ImageClassifierHelper
-import com.dicoding.asclepius.helper.ViewModelFactory
+import com.dicoding.asclepius.view.history.ViewModelFactory
 import com.dicoding.asclepius.view.history.HistoryActivity
 import com.dicoding.asclepius.view.result.ResultActivity
 import com.yalantis.ucrop.UCrop

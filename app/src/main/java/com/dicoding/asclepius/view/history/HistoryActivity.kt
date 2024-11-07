@@ -5,10 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dicoding.asclepius.R
 import com.dicoding.asclepius.databinding.ActivityHistoryBinding
-import com.dicoding.asclepius.helper.ViewModelFactory
-import com.dicoding.asclepius.view.result.ResultViewModel
 
 class HistoryActivity : AppCompatActivity() {
 

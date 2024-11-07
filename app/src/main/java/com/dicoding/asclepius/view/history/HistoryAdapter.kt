@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.dicoding.asclepius.data.entity.PredictionHistory
+import com.dicoding.asclepius.data.local.entity.PredictionHistory
 import com.dicoding.asclepius.databinding.ItemHistoryBinding
 import com.dicoding.asclepius.helper.HistoryDiffCallback
 

@@ -1,11 +1,9 @@
-package com.dicoding.asclepius.helper
+package com.dicoding.asclepius.view.history
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.asclepius.view.MainViewModel
-import com.dicoding.asclepius.view.history.HistoryViewModel
-import com.dicoding.asclepius.view.result.ResultViewModel
 
 class ViewModelFactory private constructor(private val mApplication: Application) : ViewModelProvider.NewInstanceFactory() {
     companion object {

@@ -1,17 +1,21 @@
 package com.dicoding.asclepius.view.result
 
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import com.dicoding.asclepius.data.remote.retrofit.ApiConfig
+import com.dicoding.asclepius.data.repository.NewsRepository
 import com.dicoding.asclepius.databinding.ActivityResultBinding
-import com.dicoding.asclepius.helper.ViewModelFactory
-import com.dicoding.asclepius.view.MainViewModel
+import com.dicoding.asclepius.view.result.ResultViewModel
+import com.dicoding.asclepius.view.result.ViewModelFactory
 
 class ResultActivity : AppCompatActivity() {
+    private val apiService = ApiConfig.getApiService()
     private lateinit var binding: ActivityResultBinding
-    private val resultViewModel: ResultViewModel by viewModels()
+    private val resultViewModel by viewModels<ResultViewModel>{
+        ViewModelFactory.getInstance(NewsRepository.getInstance(apiService))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,9 @@ class ResultActivity : AppCompatActivity() {
         resultViewModel.classificationResults.observe(this, Observer { results ->
             binding.resultText.text = results.joinToString()
         })
+
+        //Get the news and show it
+
     }
 
 

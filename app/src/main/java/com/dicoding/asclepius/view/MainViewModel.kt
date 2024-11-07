@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.dicoding.asclepius.data.entity.PredictionHistory
+import com.dicoding.asclepius.data.local.entity.PredictionHistory
 import com.dicoding.asclepius.data.repository.PredictionHistoryRepository
 import com.dicoding.asclepius.helper.DateHelper
 
