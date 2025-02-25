@@ -13,7 +13,7 @@ Cancer Detector is an Android application developed as part of the "Belajar Pene
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/cancer-detector.git
+   git clone https://github.com/ayukrisn/cancer-detector.git
 2. Open the project in Android Studio.
 3. Sync the project with Gradle files.
 4. Build and run the app on an emulator or device.
